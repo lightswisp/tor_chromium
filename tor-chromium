@@ -2,6 +2,11 @@
 
 require "selenium-webdriver"
 
+if !Process.uid.zero?
+	puts "Run it as a root user: sudo #{__FILE__}"
+	exit 130
+end 
+
 `systemctl start tor` # start the tor service
 
 options = Selenium::WebDriver::Options.chrome(detach: true, "args" => ["proxy-server=socks5://127.0.0.1:9050"])
@@ -12,6 +17,7 @@ driver.navigate.to "https://google.com"
 trap "SIGINT" do
   puts "\nTerminating"
   driver.quit if driver
+  `systemctl stop tor`
   exit 130
 end
 
