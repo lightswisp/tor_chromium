@@ -1,0 +1,23 @@
+#!/usr/bin/ruby
+
+require "selenium-webdriver"
+
+`systemctl start tor` # start the tor service
+
+options = Selenium::WebDriver::Options.chrome(detach: true, "args" => ["proxy-server=socks5://127.0.0.1:9050"])
+
+driver = Selenium::WebDriver.for(:chrome,:options => options)
+driver.navigate.to "https://google.com"
+
+trap "SIGINT" do
+  puts "\nTerminating"
+  driver.quit if driver
+  exit 130
+end
+
+sleep # prevent the script to terminate
+
+# TODO 
+# we need to check if the browser window is closed in order to terminate the script
+
+
